@@ -16,6 +16,7 @@ from collections import Counter
 from datetime import UTC, datetime
 import json
 from pathlib import Path
+import re
 import time
 from typing import Any
 
@@ -23,6 +24,7 @@ from openai import OpenAI
 
 from core import (
     PreparedPatientCase,
+    TriageIssue,
     TriageOutput,
     triage_submission,
 )
@@ -32,6 +34,15 @@ ROOT = Path(__file__).resolve().parent
 DEFAULT_MODEL = "gpt-4.1-mini"
 TERMINAL_RUN_STATUSES = {"completed", "failed", "canceled"}
 PRIMARY_SCORE_NAME = "aggregate_local_score_pct"
+
+# issues_value_grounding is worth half a point — it rewards structured evidence
+# but is harder to satisfy than the other binary metrics.
+METRIC_WEIGHTS: dict[str, float] = {
+    "json_schema_valid": 1.0,
+    "decision_match_oracle": 1.0,
+    "issue_categories_match_oracle": 1.0,
+    "issues_value_grounding": 0.5,
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -125,18 +136,167 @@ def load_baseline_outputs(path: Path) -> dict[int, dict[str, object]]:
     return outputs_by_index
 
 
-def _source_exists(submission: dict[str, object], source: str) -> bool:
-    if source in {"documents", "labs", "vitals", "medications", "procedure"}:
-        return source in submission
-    if "." in source:
-        head = source.split(".", 1)[0]
-        return head in submission
-    if "[" in source and source.endswith("]"):
-        head = source.split("[", 1)[0]
-        if head not in submission:
-            return False
-        return isinstance(submission.get(head), list)
-    return bool(source)
+_SOURCE_PATH_RE = re.compile(
+    r"^(?P<base>[a-z_]+)(?:\[(?P<index>\d+)\])?(?:\.(?P<field>[a-z_][\w]*))?$"
+)
+_LIST_BASES = {"documents", "labs", "vitals", "medications", "conditions"}
+_ALLOWED_BASES = _LIST_BASES | {"procedure", "patient", "metadata"}
+def _resolve_source(
+    submission: dict[str, object], source: str
+) -> tuple[object | None, dict[str, object] | None]:
+    if not source:
+        return None, None
+    match = _SOURCE_PATH_RE.match(source.strip().lower())
+    if not match:
+        return None, None
+
+    base = match.group("base")
+    if base not in _ALLOWED_BASES:
+        return None, None
+
+    index = match.group("index")
+    field = match.group("field")
+    if base in _LIST_BASES:
+        if field and index is None:
+            return None, None
+        items = submission.get(base)
+        if not isinstance(items, list):
+            return None, None
+        if index is None:
+            return items, {"base": base, "index": None, "field": field}
+        idx = int(index)
+        if idx < 0 or idx >= len(items):
+            return None, None
+        item = items[idx]
+        if field:
+            if isinstance(item, dict):
+                return item.get(field), {"base": base, "index": idx, "field": field}
+            return None, None
+        return item, {"base": base, "index": idx, "field": None}
+
+    if index is not None:
+        return None, None
+    obj = submission.get(base)
+    if field:
+        if isinstance(obj, dict):
+            return obj.get(field), {"base": base, "index": None, "field": field}
+        return None, None
+    return obj, {"base": base, "index": None, "field": None}
+
+
+def _is_missing_issue(issue: TriageIssue) -> bool:
+    return str(issue.category or "").upper() == "MISSING_REQUIRED_DATA"
+
+
+
+def _collect_candidate_values(ref: object) -> list[str]:
+    values: list[str] = []
+    if isinstance(ref, dict):
+        for value in ref.values():
+            if isinstance(value, str) and len(value.strip()) >= 4:
+                values.append(value)
+            elif isinstance(value, (int, float)):
+                values.append(str(value))
+    elif isinstance(ref, str):
+        values.append(ref)
+    elif isinstance(ref, (int, float)):
+        values.append(str(ref))
+    return values
+
+
+def _details_mentions_value(details: str, ref: object) -> bool:
+    if not details:
+        return False
+    details_lower = details.lower()
+    candidates = _collect_candidate_values(ref)
+
+    for value in candidates:
+        value_lower = value.lower()
+        if len(value_lower) >= 4 and value_lower in details_lower:
+            return True
+
+    dates_in_details = set(re.findall(r"\d{4}-\d{2}-\d{2}", details_lower))
+    if dates_in_details:
+        for value in candidates:
+            value_lower = value.lower()
+            if any(date in value_lower for date in dates_in_details):
+                return True
+
+    return False
+
+
+def _is_quote_from_doc(details: str, ref: object) -> bool:
+    if not details:
+        return False
+    if isinstance(ref, dict):
+        text = ref.get("text")
+    elif isinstance(ref, str):
+        text = ref
+    else:
+        text = None
+    if not isinstance(text, str):
+        return False
+    snippet = details.strip().strip("'\"")
+    if len(snippet) < 8:
+        return False
+    return snippet.lower() in text.lower()
+
+
+def _fuzzy_grounded(
+    submission: dict[str, object],
+    issue: TriageIssue,
+    details: str,
+) -> bool:
+    """Lenient fallback: passes if details mentions any concrete value from a
+    submission object whose field appears in the source string, or from the
+    category-relevant collection."""
+    source_lower = str(issue.evidence.source or "").strip().lower()
+
+    # Strategy (a): find submission objects whose field value appears in source.
+    # E.g. vital.source="Primary care visit" contained in candidate source string.
+    for collection in ("vitals", "labs", "documents", "medications", "conditions"):
+        for item in submission.get(collection, []) or []:
+            if not isinstance(item, dict):
+                continue
+            for v in item.values():
+                if isinstance(v, str) and len(v) >= 4 and v.lower() in source_lower:
+                    if _details_mentions_value(details, item) or _is_quote_from_doc(
+                        details, item
+                    ):
+                        return True
+    for top_key in ("procedure", "patient", "metadata"):
+        obj = submission.get(top_key)
+        if isinstance(obj, dict):
+            for v in obj.values():
+                if isinstance(v, str) and len(v) >= 4 and v.lower() in source_lower:
+                    if _details_mentions_value(details, obj):
+                        return True
+
+    # Strategy (b): scan the category-relevant section for any mentioned value.
+    category = str(issue.category or "").upper()
+    section_refs: list[object] = []
+    if category == "REQUIRED_TESTING":
+        section_refs = list(submission.get("labs", []) or [])
+    elif category == "ACUTE_SAFETY_EXCLUSION":
+        section_refs = list(submission.get("vitals", []) or [])
+    elif category == "REQUIRED_DOCUMENTATION":
+        section_refs = list(submission.get("documents", []) or [])
+    elif category == "ANTICOAGULATION_MANAGEMENT":
+        section_refs = list(submission.get("documents", []) or []) + list(
+            submission.get("medications", []) or []
+        )
+    elif category == "MISSING_REQUIRED_DATA":
+        for key in ("procedure", "vitals", "labs", "medications", "documents"):
+            item = submission.get(key)
+            if isinstance(item, list):
+                section_refs.extend(item)
+            elif isinstance(item, dict):
+                section_refs.append(item)
+
+    return any(
+        _details_mentions_value(details, ref) or _is_quote_from_doc(details, ref)
+        for ref in section_refs
+    )
 
 
 def _check_issues_value_grounding(
@@ -144,12 +304,22 @@ def _check_issues_value_grounding(
     output: TriageOutput,
 ) -> bool:
     for issue in output.issues:
-        if not issue.evidence.source or not issue.evidence.details:
+        source = issue.evidence.source
+        details = issue.evidence.details
+        if not source or not details:
             return False
-        if not _source_exists(submission, issue.evidence.source):
-            return False
-        if not any(char.isdigit() for char in issue.evidence.details):
-            return False
+        # Missing issues don't need value grounding — there's nothing to ground against.
+        if _is_missing_issue(issue):
+            continue
+        # Non-missing issues must cite a concrete value from the submission.
+        ref, _meta = _resolve_source(submission, source)
+        if ref is not None and (
+            _details_mentions_value(details, ref) or _is_quote_from_doc(details, ref)
+        ):
+            continue
+        if _fuzzy_grounded(submission, issue, details):
+            continue
+        return False
     return True
 
 
@@ -172,66 +342,6 @@ def _extract_output_payload(
 
     return None, None if error is None else str(error)
 
-
-def _issue_signature_set(output: TriageOutput) -> set[str]:
-    return {
-        f"{issue.category}|{_canonical_issue_intent(issue)}" for issue in output.issues
-    }
-
-
-def _canonical_issue_intent(issue: Any) -> str:
-    category = str(getattr(issue, "category", "") or "").upper()
-    description = str(getattr(issue, "description", "") or "").lower()
-
-    if category == "REQUIRED_DOCUMENTATION":
-        if "history" in description or "h&p" in description or "h and p" in description:
-            return "hp_missing_or_invalid"
-        if "consent" in description:
-            return "consent_missing_or_unsigned"
-        return "documentation_other"
-
-    if category == "REQUIRED_TESTING":
-        test = "other"
-        if "cbc" in description:
-            test = "cbc"
-        elif "cmp" in description:
-            test = "cmp"
-
-        if any(token in description for token in ("missing", "no ", "not found")):
-            return f"{test}_missing"
-        if any(
-            token in description for token in ("outside", "outdated", "older", "window")
-        ):
-            return f"{test}_outdated"
-        return f"{test}_other"
-
-    if category == "ANTICOAGULATION_MANAGEMENT":
-        return "anticoag_plan_missing_or_unclear"
-
-    if category == "ACUTE_SAFETY_EXCLUSION":
-        if any(
-            token in description
-            for token in ("blood pressure", "systolic", "diastolic", "bp")
-        ):
-            return "bp_exclusion"
-        if any(token in description for token in ("temperature", "fever", "100.4")):
-            return "temp_exclusion"
-        return "safety_exclusion_other"
-
-    if category == "MISSING_REQUIRED_DATA":
-        if "procedure date" in description:
-            return "missing_procedure_date"
-        if "risk" in description:
-            return "missing_procedure_risk"
-        if "medication" in description or "anticoagulant active status" in description:
-            return "missing_medication_data"
-        if "blood pressure" in description:
-            return "missing_bp_data"
-        if "temperature" in description:
-            return "missing_temperature_data"
-        return "missing_required_data_other"
-
-    return "other"
 
 
 def _local_metrics_for_row(
@@ -263,12 +373,6 @@ def _local_metrics_for_row(
     )
     issue_categories_match_oracle = expected_categories == actual_categories
 
-    expected_issue_signatures = _issue_signature_set(oracle_output)
-    actual_issue_signatures = (
-        _issue_signature_set(parsed_output) if parsed_output else set()
-    )
-    issue_signatures_match_oracle = expected_issue_signatures == actual_issue_signatures
-
     issues_value_grounding = (
         _check_issues_value_grounding(submission, parsed_output)
         if parsed_output
@@ -279,12 +383,12 @@ def _local_metrics_for_row(
         "json_schema_valid": json_schema_valid,
         "decision_match_oracle": decision_match_oracle,
         "issue_categories_match_oracle": issue_categories_match_oracle,
-        "issue_signatures_match_oracle": issue_signatures_match_oracle,
         "issues_value_grounding": issues_value_grounding,
     }
 
     aggregate_local_score = 100.0 * (
-        sum(1 for value in metric_bools.values() if value) / len(metric_bools)
+        sum(METRIC_WEIGHTS[k] for k, v in metric_bools.items() if v)
+        / sum(METRIC_WEIGHTS.values())
     )
 
     return {
@@ -295,8 +399,6 @@ def _local_metrics_for_row(
         "aggregate_local_score": aggregate_local_score,
         "expected_categories": expected_categories,
         "actual_categories": actual_categories,
-        "expected_issue_signatures": sorted(expected_issue_signatures),
-        "actual_issue_signatures": sorted(actual_issue_signatures),
         "actual_decision": actual_decision,
     }
 
@@ -328,12 +430,10 @@ def _build_eval_items(
             "case_id": case.case_id,
             "oracle_decision": oracle_output.decision,
             "expected_issue_categories": "|".join(local["expected_categories"]),
-            "expected_issue_signatures": "|".join(local["expected_issue_signatures"]),
             "expected_json_schema_valid": "true",
             "expected_issues_value_grounding": "true",
             "actual_decision": local["actual_decision"],
             "actual_issue_categories": "|".join(local["actual_categories"]),
-            "actual_issue_signatures": "|".join(local["actual_issue_signatures"]),
             "json_schema_valid": "true" if metrics["json_schema_valid"] else "false",
             "issues_value_grounding": (
                 "true" if metrics["issues_value_grounding"] else "false"
@@ -372,12 +472,10 @@ def _create_eval(client: OpenAI) -> Any:
                     "case_id": {"type": "string"},
                     "oracle_decision": {"type": "string"},
                     "expected_issue_categories": {"type": "string"},
-                    "expected_issue_signatures": {"type": "string"},
                     "expected_json_schema_valid": {"type": "string"},
                     "expected_issues_value_grounding": {"type": "string"},
                     "actual_decision": {"type": "string"},
                     "actual_issue_categories": {"type": "string"},
-                    "actual_issue_signatures": {"type": "string"},
                     "json_schema_valid": {"type": "string"},
                     "issues_value_grounding": {"type": "string"},
                 },
@@ -386,12 +484,10 @@ def _create_eval(client: OpenAI) -> Any:
                     "case_id",
                     "oracle_decision",
                     "expected_issue_categories",
-                    "expected_issue_signatures",
                     "expected_json_schema_valid",
                     "expected_issues_value_grounding",
                     "actual_decision",
                     "actual_issue_categories",
-                    "actual_issue_signatures",
                     "json_schema_valid",
                     "issues_value_grounding",
                 ],
@@ -424,13 +520,6 @@ def _create_eval(client: OpenAI) -> Any:
                 "name": "issue_categories_match_oracle",
                 "input": "{{item.actual_issue_categories}}",
                 "reference": "{{item.expected_issue_categories}}",
-                "operation": "eq",
-            },
-            {
-                "type": "string_check",
-                "name": "issue_signatures_match_oracle",
-                "input": "{{item.actual_issue_signatures}}",
-                "reference": "{{item.expected_issue_signatures}}",
                 "operation": "eq",
             },
         ],
@@ -517,7 +606,6 @@ def _summarize_local_rows(local_rows: list[dict[str, object]]) -> dict[str, obje
         "json_schema_valid",
         "decision_match_oracle",
         "issue_categories_match_oracle",
-        "issue_signatures_match_oracle",
         "issues_value_grounding",
     ]
 

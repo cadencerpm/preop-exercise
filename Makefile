@@ -3,15 +3,8 @@ OUTPUT ?= data/baseline_outputs.jsonl
 REPORT ?= data/eval_report.json
 DETERMINISM_REPORT ?= data/determinism_report.json
 MODEL ?= gpt-4.1-mini
-DATASET ?= iammustafatz/diabetes-prediction-dataset
 
-.PHONY: prepare baseline evals determinism score all clean
-
-prepare:
-	uv run prepare_dataset.py \
-		--dataset-slug $(DATASET) \
-		--output data/patients.jsonl \
-		--sample-output $(INPUT)
+.PHONY: baseline evals determinism score report all clean
 
 baseline:
 	uv run run_baseline.py \
@@ -35,11 +28,12 @@ determinism:
 score:
 	@python3 -c 'import json; r=json.load(open("$(REPORT)")); s=(r.get("primary_score",{}) or {}).get("value_pct"); print(s if s is not None else r.get("local_metrics_summary",{}).get("aggregate_local_score_pct", 0.0))'
 
+report:
+	uv run view_report.py --report $(REPORT)
+
 all: baseline evals determinism score
 
 clean:
-	rm -f data/patients.jsonl \
-		data/patients_sample_50.jsonl \
-		data/baseline_outputs.jsonl \
+	rm -f data/baseline_outputs.jsonl \
 		data/eval_report.json \
 		data/determinism_report.json
