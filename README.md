@@ -70,6 +70,14 @@ make determinism
 make score
 ```
 
+6. View the interactive report (TUI):
+
+```bash
+make report
+```
+
+This opens a terminal UI (`view_report.py`) that shows per-case results side-by-side with oracle expectations. You can browse records, see metric pass/fail status, and inspect submission data. Press `f` on a metric row to filter the case list to failures. Press `q` to quit.
+
 ## Outputs
 
 - Baseline outputs: `data/baseline_outputs.jsonl`

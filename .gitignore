@@ -25,3 +25,8 @@ dist/
 .vscode/
 *.swp
 .ipynb_checkpoints/
+
+# Generated data
+data/baseline_outputs.jsonl
+data/eval_report.json
+data/determinism_report.json
