@@ -6,6 +6,7 @@ __pycache__/
 venv/
 env/
 .env/
+.env 
 
 # Python tooling
 .pytest_cache/
