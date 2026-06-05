@@ -10,11 +10,9 @@ Your output must match this schema:
 - `issues[]`: category + evidence (`source`, `details`)
 - `explanation`
 
-## What You Should Edit
+## What You Should Build
 
-Only edit `core.py`.
-
-Implement `triage_submission(...)`. It is currently a naive LLM-based solution that makes a real model API call. The starter implementation intentionally does not follow some best practices in using the OpenAI API.
+Implement `triage_submission(...)`. It is currently a naive LLM-based solution that makes a real model API call. The starter implementation intentionally does not follow some best practices in using the OpenAI API. You may use whatever file structure makes sense for your solution.
 
 ## What Is Provided
 
