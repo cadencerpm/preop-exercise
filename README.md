@@ -2,17 +2,13 @@
 
 ## Objective
 
-Implement a pre-op triage function for a single submission package.
+Implement `triage_submission(...)` in `core.py` - it is a pre-op triage function for a single submission package. It is currently a naive LLM-based solution that makes a real model API call. The starter implementation intentionally does not follow some best practices in using the OpenAI API. You may use whatever file structure makes sense for your solution.
 
 Your output must match this schema:
 
 - `decision`: `READY | NEEDS_FOLLOW_UP | NOT_CLEARED`
 - `issues[]`: category + evidence (`source`, `details`)
 - `explanation`
-
-## What You Should Build
-
-Implement `triage_submission(...)`. It is currently a naive LLM-based solution that makes a real model API call. The starter implementation intentionally does not follow some best practices in using the OpenAI API. You may use whatever file structure makes sense for your solution.
 
 ## What Is Provided
 
