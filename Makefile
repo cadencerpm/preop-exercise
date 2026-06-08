@@ -4,7 +4,7 @@ REPORT ?= data/eval_report.json
 DETERMINISM_REPORT ?= data/determinism_report.json
 MODEL ?= gpt-4.1-mini
 
-.PHONY: baseline evals determinism score report all clean
+.PHONY: baseline evals determinism score report test all clean
 
 baseline:
 	uv run run_baseline.py \
@@ -30,6 +30,13 @@ score:
 
 report:
 	uv run view_report.py --report $(REPORT)
+
+test:
+	uv run \
+		--with 'openai>=2.0.0' \
+		--with 'pydantic>=2.8.0' \
+		--with 'pytest>=8.0.0' \
+		python -m pytest tests
 
 all: baseline evals determinism score
 
