@@ -1,0 +1,1686 @@
+{
+  "case_00000": [
+    {
+      "consent_signed": null,
+      "excerpt": "HISTORY AND PHYSICAL: pre-op evaluation complete for planned procedure. Procedure date target: 2026-03-01.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Electronic consent obtained and signed by patient for procedure.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Patient takes apixaban for atrial fibrillation. Follow up with cardiology for peri-op recommendations.",
+      "index": 4,
+      "is_clear_plan": false,
+      "is_current": null,
+      "role": "PERIOP_ANTICOAG_PLAN"
+    }
+  ],
+  "case_00001": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P completed; patient reviewed in pre-anesthesia clinic. Procedure date target: 2026-03-02.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Patient reviewed risks/benefits and signed surgical consent.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00002": [
+    {
+      "consent_signed": null,
+      "excerpt": "Pre-op H and P documented with interval history and exam. Procedure date target: 2026-03-03.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Signed consent scanned and verified before scheduling.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00003": [
+    {
+      "consent_signed": null,
+      "excerpt": "HPI: pre-op evaluation. PMH reviewed. ROS negative. PE documented. Procedure date target: 2026-03-04.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained; signature on file.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00004": [
+    {
+      "consent_signed": null,
+      "excerpt": "History: pre-op evaluation complete. Physical exam recorded with vitals. Procedure date target: 2026-03-05.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained and signed; documentation completed.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anticoagulation mentioned; no clear hold/resume guidance documented.",
+      "index": 4,
+      "is_clear_plan": false,
+      "is_current": null,
+      "role": "PERIOP_ANTICOAG_PLAN"
+    }
+  ],
+  "case_00005": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P note: assessment and plan documented with procedure readiness. Procedure date target: 2026-03-06.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Electronic consent obtained and signed by patient for procedure.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00006": [
+    {
+      "consent_signed": null,
+      "excerpt": "HISTORY AND PHYSICAL: pre-op evaluation complete for planned procedure. Procedure date target: 2026-03-07.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Patient reviewed risks/benefits and signed surgical consent.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anticoagulant noted in medication list; perioperative management details not yet documented.",
+      "index": 4,
+      "is_clear_plan": false,
+      "is_current": null,
+      "role": "PERIOP_ANTICOAG_PLAN"
+    }
+  ],
+  "case_00007": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P completed; patient reviewed in pre-anesthesia clinic. Procedure date target: 2026-03-08.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Signed consent scanned and verified before scheduling.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00008": [
+    {
+      "consent_signed": null,
+      "excerpt": "Pre-op H and P documented with interval history and exam. Procedure date target: 2026-03-09.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "UNSIGNED",
+      "excerpt": "Consent documented but unsigned; awaiting patient signature.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00009": [
+    {
+      "consent_signed": null,
+      "excerpt": "HPI: pre-op evaluation. PMH reviewed. ROS negative. PE documented. Procedure date target: 2026-03-10.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained and signed; documentation completed.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00010": [
+    {
+      "consent_signed": null,
+      "excerpt": "History: pre-op evaluation complete. Physical exam recorded with vitals. Procedure date target: 2026-03-11.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Electronic consent obtained and signed by patient for procedure.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00011": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P note: assessment and plan documented with procedure readiness. Procedure date target: 2026-03-12.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00012": [
+    {
+      "consent_signed": null,
+      "excerpt": "HISTORY AND PHYSICAL: pre-op evaluation complete for planned procedure. Procedure date target: 2026-03-13.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Signed consent scanned and verified before scheduling.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00013": [
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained; signature on file.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00014": [
+    {
+      "consent_signed": null,
+      "excerpt": "Pre-op H and P documented with interval history and exam. Procedure date target: 2026-03-15.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained and signed; documentation completed.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00015": [
+    {
+      "consent_signed": null,
+      "excerpt": "HPI: pre-op evaluation. PMH reviewed. ROS negative. PE documented. Procedure date target: 2026-03-16.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Electronic consent obtained and signed by patient for procedure.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00016": [
+    {
+      "consent_signed": null,
+      "excerpt": "History: pre-op evaluation complete. Physical exam recorded with vitals. Procedure date target: 2026-03-17.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Patient reviewed risks/benefits and signed surgical consent.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00017": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P note: assessment and plan documented with procedure readiness. Procedure date target: 2026-03-18.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "UNSIGNED",
+      "excerpt": "Unsigned consent on chart; provider requested signature before scheduling.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00018": [
+    {
+      "consent_signed": null,
+      "excerpt": "HISTORY AND PHYSICAL: pre-op evaluation complete for planned procedure. Procedure date target: 2026-03-19.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained; signature on file.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00019": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P completed; patient reviewed in pre-anesthesia clinic. Procedure date target: 2026-03-20.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained and signed; documentation completed.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00020": [
+    {
+      "consent_signed": null,
+      "excerpt": "Pre-op H and P documented with interval history and exam. Procedure date target: 2026-03-21.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Electronic consent obtained and signed by patient for procedure.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00021": [
+    {
+      "consent_signed": null,
+      "excerpt": "HPI: pre-op evaluation. PMH reviewed. ROS negative. PE documented. Procedure date target: 2026-03-22.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Patient reviewed risks/benefits and signed surgical consent.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anticoagulant noted in medication list; perioperative management details not yet documented.",
+      "index": 4,
+      "is_clear_plan": false,
+      "is_current": null,
+      "role": "PERIOP_ANTICOAG_PLAN"
+    }
+  ],
+  "case_00022": [
+    {
+      "consent_signed": null,
+      "excerpt": "History: pre-op evaluation complete. Physical exam recorded with vitals. Procedure date target: 2026-03-23.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Signed consent scanned and verified before scheduling.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00023": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P note: assessment and plan documented with procedure readiness. Procedure date target: 2026-03-24.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained; signature on file.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00024": [
+    {
+      "consent_signed": null,
+      "excerpt": "HISTORY AND PHYSICAL: pre-op evaluation complete for planned procedure. Procedure date target: 2026-03-25.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained and signed; documentation completed.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00025": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P completed; patient reviewed in pre-anesthesia clinic. Procedure date target: 2026-03-26.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00026": [
+    {
+      "consent_signed": null,
+      "excerpt": "Pre-op H and P documented with interval history and exam. Procedure date target: 2026-03-27.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Patient reviewed risks/benefits and signed surgical consent.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anticoagulant noted in medication list; perioperative management details not yet documented.",
+      "index": 4,
+      "is_clear_plan": false,
+      "is_current": null,
+      "role": "PERIOP_ANTICOAG_PLAN"
+    }
+  ],
+  "case_00027": [
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Signed consent scanned and verified before scheduling.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00028": [
+    {
+      "consent_signed": null,
+      "excerpt": "History: pre-op evaluation complete. Physical exam recorded with vitals. Procedure date target: 2026-03-29.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained; signature on file.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00029": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P note: assessment and plan documented with procedure readiness. Procedure date target: 2026-03-30.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained and signed; documentation completed.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00030": [
+    {
+      "consent_signed": null,
+      "excerpt": "HISTORY AND PHYSICAL: pre-op evaluation complete for planned procedure. Procedure date target: 2026-03-31.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Electronic consent obtained and signed by patient for procedure.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00031": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P completed; patient reviewed in pre-anesthesia clinic. Procedure date target: 2026-04-01.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Patient reviewed risks/benefits and signed surgical consent.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00032": [
+    {
+      "consent_signed": null,
+      "excerpt": "Pre-op H and P documented with interval history and exam. Procedure date target: 2026-04-02.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Signed consent scanned and verified before scheduling.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00033": [
+    {
+      "consent_signed": null,
+      "excerpt": "HPI: pre-op evaluation. PMH reviewed. ROS negative. PE documented. Procedure date target: 2026-04-03.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00034": [
+    {
+      "consent_signed": null,
+      "excerpt": "History: pre-op evaluation complete. Physical exam recorded with vitals. Procedure date target: 2026-04-04.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained and signed; documentation completed.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00035": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P note: assessment and plan documented with procedure readiness. Procedure date target: 2026-04-05.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Electronic consent obtained and signed by patient for procedure.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00036": [
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Patient reviewed risks/benefits and signed surgical consent.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00037": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P completed; patient reviewed in pre-anesthesia clinic. Procedure date target: 2026-04-07.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Signed consent scanned and verified before scheduling.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00038": [
+    {
+      "consent_signed": null,
+      "excerpt": "Pre-op H and P documented with interval history and exam. Procedure date target: 2026-04-08.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained; signature on file.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Apixaban listed; perioperative management plan to be finalized.",
+      "index": 4,
+      "is_clear_plan": false,
+      "is_current": null,
+      "role": "PERIOP_ANTICOAG_PLAN"
+    }
+  ],
+  "case_00039": [
+    {
+      "consent_signed": null,
+      "excerpt": "HPI: pre-op evaluation. PMH reviewed. ROS negative. PE documented. Procedure date target: 2026-04-09.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained and signed; documentation completed.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00040": [
+    {
+      "consent_signed": null,
+      "excerpt": "History: pre-op evaluation complete. Physical exam recorded with vitals. Procedure date target: 2026-04-10.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Electronic consent obtained and signed by patient for procedure.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00041": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P note: assessment and plan documented with procedure readiness. Procedure date target: 2026-04-11.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Patient reviewed risks/benefits and signed surgical consent.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00042": [
+    {
+      "consent_signed": null,
+      "excerpt": "HISTORY AND PHYSICAL: pre-op evaluation complete for planned procedure. Procedure date target: 2026-04-12.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Signed consent scanned and verified before scheduling.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Discussed blood thinner use with patient; final plan pending specialist input.",
+      "index": 4,
+      "is_clear_plan": false,
+      "is_current": null,
+      "role": "PERIOP_ANTICOAG_PLAN"
+    }
+  ],
+  "case_00043": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P completed; patient reviewed in pre-anesthesia clinic. Procedure date target: 2026-04-13.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained; signature on file.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00044": [
+    {
+      "consent_signed": null,
+      "excerpt": "Pre-op H and P documented with interval history and exam. Procedure date target: 2026-04-14.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "UNSIGNED",
+      "excerpt": "Unsigned consent noted; signature not yet on file.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00045": [
+    {
+      "consent_signed": null,
+      "excerpt": "HPI: pre-op evaluation. PMH reviewed. ROS negative. PE documented. Procedure date target: 2026-03-01.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Electronic consent obtained and signed by patient for procedure.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00046": [
+    {
+      "consent_signed": null,
+      "excerpt": "History: pre-op evaluation complete. Physical exam recorded with vitals. Procedure date target: 2026-03-02.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Patient reviewed risks/benefits and signed surgical consent.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00047": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P note: assessment and plan documented with procedure readiness. Procedure date target: 2026-03-03.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Signed consent scanned and verified before scheduling.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Routine clinic follow-up note with no additional surgical clearance decisions.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00048": [
+    {
+      "consent_signed": null,
+      "excerpt": "HISTORY AND PHYSICAL: pre-op evaluation complete for planned procedure. Procedure date target: 2026-03-04.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained; signature on file.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Nursing intake confirms home medications and fasting instructions were reviewed.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ],
+  "case_00049": [
+    {
+      "consent_signed": null,
+      "excerpt": "H&P completed; patient reviewed in pre-anesthesia clinic. Procedure date target: 2026-03-05.",
+      "index": 0,
+      "is_clear_plan": null,
+      "is_current": true,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Prior pre-op H&P retained for longitudinal chart context.",
+      "index": 1,
+      "is_clear_plan": null,
+      "is_current": false,
+      "role": "HISTORY_AND_PHYSICAL"
+    },
+    {
+      "consent_signed": "SIGNED",
+      "excerpt": "Consent obtained and signed; documentation completed.",
+      "index": 2,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "SURGICAL_CONSENT"
+    },
+    {
+      "consent_signed": null,
+      "excerpt": "Anesthesia screening completed; airway and social history documented.",
+      "index": 3,
+      "is_clear_plan": null,
+      "is_current": null,
+      "role": "OTHER"
+    }
+  ]
+}

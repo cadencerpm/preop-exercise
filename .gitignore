@@ -31,3 +31,4 @@ dist/
 data/baseline_outputs.jsonl
 data/eval_report.json
 data/determinism_report.json
+data/baseline.log
