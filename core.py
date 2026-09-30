@@ -13,7 +13,7 @@ from pydantic import AliasChoices, BaseModel, Field
 
 BASELINE_SYSTEM_PROMPT = """
 You are a clinical operations assistant for pre-op scheduling triage.
-Use only the policy below. Do not use outside medical knowledge.
+Base decisions only on the policy below. General clinical knowledge may be used to interpret the record (e.g., drug brand names, unit conversions), not to add criteria.
 
 Cadence Surgical Center Pre-Operative Scheduling Policy (effective Jan 1, 2026)
 
@@ -155,16 +155,10 @@ class PatientSubmission(BaseModel):
     documents: list[Document] = Field(default_factory=list)
     metadata: SubmissionMetadata | None = None
 
-class TriageIssueEvidence(BaseModel):
-
-    source: str
-    details: str
-
 class TriageIssue(BaseModel):
 
     category: IssueCategory
-    description: str
-    evidence: TriageIssueEvidence
+    evidence: str
 
 class TriageOutput(BaseModel):
     """Structured output contract for triage responses."""
@@ -172,14 +166,6 @@ class TriageOutput(BaseModel):
     decision: Decision
     issues: list[TriageIssue] = Field(validation_alias=AliasChoices("issues"))
     explanation: str
-
-
-class PreparedPatientCase(BaseModel):
-    """Serialized eval case with submission payload and expected oracle output."""
-
-    case_id: str
-    submission: PatientSubmission
-    expected_output: TriageOutput
 
 
 def triage_output_json_schema() -> dict[str, object]:

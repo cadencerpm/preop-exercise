@@ -16,16 +16,15 @@ from collections import Counter
 from datetime import UTC, datetime
 import json
 from pathlib import Path
-import re
 import time
 from typing import Any
 
 from openai import OpenAI
+from pydantic import BaseModel, ConfigDict
 
 from core import (
-    PreparedPatientCase,
-    TriageIssue,
-    TriageOutput,
+    Decision,
+    IssueCategory,
     triage_submission,
 )
 
@@ -35,13 +34,10 @@ DEFAULT_MODEL = "gpt-4.1-mini"
 TERMINAL_RUN_STATUSES = {"completed", "failed", "canceled"}
 PRIMARY_SCORE_NAME = "aggregate_local_score_pct"
 
-# issues_value_grounding is worth half a point — it rewards structured evidence
-# but is harder to satisfy than the other binary metrics.
 METRIC_WEIGHTS: dict[str, float] = {
     "json_schema_valid": 1.0,
     "decision_match_oracle": 1.0,
     "issue_categories_match_oracle": 1.0,
-    "issues_value_grounding": 0.5,
 }
 
 
@@ -99,6 +95,39 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+# --- Inputs ------------------------------------------------------------------
+
+
+class CaseLabel(BaseModel):
+    """Human label for one case: the decision, the issue categories, and why."""
+
+    decision: Decision
+    categories: list[IssueCategory]
+    rationale: str | None = None
+
+
+class EvalCase(BaseModel):
+    case_id: str
+    submission: dict[str, Any]
+    label: CaseLabel
+
+
+class _ScoredIssue(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    category: IssueCategory
+
+
+class ScoredOutput(BaseModel):
+    """The part of a triage output that is scored. Everything else (evidence format,
+    explanation, extra fields) is up to the implementation."""
+
+    model_config = ConfigDict(extra="allow")
+
+    decision: Decision
+    issues: list[_ScoredIssue]
+
+
 def load_jsonl(path: Path) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     with path.open("r", encoding="utf-8") as handle:
@@ -110,22 +139,8 @@ def load_jsonl(path: Path) -> list[dict[str, object]]:
     return rows
 
 
-def load_cases(path: Path) -> list[PreparedPatientCase]:
-    cases: list[PreparedPatientCase] = []
-    for idx, row in enumerate(load_jsonl(path)):
-        if not (
-            isinstance(row, dict)
-            and "submission" in row
-            and "case_id" in row
-            and "expected_output" in row
-        ):
-            raise ValueError(
-                f"Input row {idx} is missing required keys "
-                "(case_id, submission, expected_output). Run make prepare first."
-            )
-        case = PreparedPatientCase.model_validate(row)
-        cases.append(case)
-    return cases
+def load_cases(path: Path) -> list[EvalCase]:
+    return [EvalCase.model_validate(row) for row in load_jsonl(path)]
 
 
 def load_baseline_outputs(path: Path) -> dict[int, dict[str, object]]:
@@ -134,193 +149,6 @@ def load_baseline_outputs(path: Path) -> dict[int, dict[str, object]]:
         idx = int(row.get("record_index", len(outputs_by_index)))
         outputs_by_index[idx] = row
     return outputs_by_index
-
-
-_SOURCE_PATH_RE = re.compile(
-    r"^(?P<base>[a-z_]+)(?:\[(?P<index>\d+)\])?(?:\.(?P<field>[a-z_][\w]*))?$"
-)
-_LIST_BASES = {"documents", "labs", "vitals", "medications", "conditions"}
-_ALLOWED_BASES = _LIST_BASES | {"procedure", "patient", "metadata"}
-def _resolve_source(
-    submission: dict[str, object], source: str
-) -> tuple[object | None, dict[str, object] | None]:
-    if not source:
-        return None, None
-    match = _SOURCE_PATH_RE.match(source.strip().lower())
-    if not match:
-        return None, None
-
-    base = match.group("base")
-    if base not in _ALLOWED_BASES:
-        return None, None
-
-    index = match.group("index")
-    field = match.group("field")
-    if base in _LIST_BASES:
-        if field and index is None:
-            return None, None
-        items = submission.get(base)
-        if not isinstance(items, list):
-            return None, None
-        if index is None:
-            return items, {"base": base, "index": None, "field": field}
-        idx = int(index)
-        if idx < 0 or idx >= len(items):
-            return None, None
-        item = items[idx]
-        if field:
-            if isinstance(item, dict):
-                return item.get(field), {"base": base, "index": idx, "field": field}
-            return None, None
-        return item, {"base": base, "index": idx, "field": None}
-
-    if index is not None:
-        return None, None
-    obj = submission.get(base)
-    if field:
-        if isinstance(obj, dict):
-            return obj.get(field), {"base": base, "index": None, "field": field}
-        return None, None
-    return obj, {"base": base, "index": None, "field": None}
-
-
-def _is_missing_issue(issue: TriageIssue) -> bool:
-    return str(issue.category or "").upper() == "MISSING_REQUIRED_DATA"
-
-
-
-def _collect_candidate_values(ref: object) -> list[str]:
-    values: list[str] = []
-    if isinstance(ref, dict):
-        for value in ref.values():
-            if isinstance(value, str) and len(value.strip()) >= 4:
-                values.append(value)
-            elif isinstance(value, (int, float)):
-                values.append(str(value))
-    elif isinstance(ref, str):
-        values.append(ref)
-    elif isinstance(ref, (int, float)):
-        values.append(str(ref))
-    return values
-
-
-def _details_mentions_value(details: str, ref: object) -> bool:
-    if not details:
-        return False
-    details_lower = details.lower()
-    candidates = _collect_candidate_values(ref)
-
-    for value in candidates:
-        value_lower = value.lower()
-        if len(value_lower) >= 4 and value_lower in details_lower:
-            return True
-
-    dates_in_details = set(re.findall(r"\d{4}-\d{2}-\d{2}", details_lower))
-    if dates_in_details:
-        for value in candidates:
-            value_lower = value.lower()
-            if any(date in value_lower for date in dates_in_details):
-                return True
-
-    return False
-
-
-def _is_quote_from_doc(details: str, ref: object) -> bool:
-    if not details:
-        return False
-    if isinstance(ref, dict):
-        text = ref.get("text")
-    elif isinstance(ref, str):
-        text = ref
-    else:
-        text = None
-    if not isinstance(text, str):
-        return False
-    snippet = details.strip().strip("'\"")
-    if len(snippet) < 8:
-        return False
-    return snippet.lower() in text.lower()
-
-
-def _fuzzy_grounded(
-    submission: dict[str, object],
-    issue: TriageIssue,
-    details: str,
-) -> bool:
-    """Lenient fallback: passes if details mentions any concrete value from a
-    submission object whose field appears in the source string, or from the
-    category-relevant collection."""
-    source_lower = str(issue.evidence.source or "").strip().lower()
-
-    # Strategy (a): find submission objects whose field value appears in source.
-    # E.g. vital.source="Primary care visit" contained in candidate source string.
-    for collection in ("vitals", "labs", "documents", "medications", "conditions"):
-        for item in submission.get(collection, []) or []:
-            if not isinstance(item, dict):
-                continue
-            for v in item.values():
-                if isinstance(v, str) and len(v) >= 4 and v.lower() in source_lower:
-                    if _details_mentions_value(details, item) or _is_quote_from_doc(
-                        details, item
-                    ):
-                        return True
-    for top_key in ("procedure", "patient", "metadata"):
-        obj = submission.get(top_key)
-        if isinstance(obj, dict):
-            for v in obj.values():
-                if isinstance(v, str) and len(v) >= 4 and v.lower() in source_lower:
-                    if _details_mentions_value(details, obj):
-                        return True
-
-    # Strategy (b): scan the category-relevant section for any mentioned value.
-    category = str(issue.category or "").upper()
-    section_refs: list[object] = []
-    if category == "REQUIRED_TESTING":
-        section_refs = list(submission.get("labs", []) or [])
-    elif category == "ACUTE_SAFETY_EXCLUSION":
-        section_refs = list(submission.get("vitals", []) or [])
-    elif category == "REQUIRED_DOCUMENTATION":
-        section_refs = list(submission.get("documents", []) or [])
-    elif category == "ANTICOAGULATION_MANAGEMENT":
-        section_refs = list(submission.get("documents", []) or []) + list(
-            submission.get("medications", []) or []
-        )
-    elif category == "MISSING_REQUIRED_DATA":
-        for key in ("procedure", "vitals", "labs", "medications", "documents"):
-            item = submission.get(key)
-            if isinstance(item, list):
-                section_refs.extend(item)
-            elif isinstance(item, dict):
-                section_refs.append(item)
-
-    return any(
-        _details_mentions_value(details, ref) or _is_quote_from_doc(details, ref)
-        for ref in section_refs
-    )
-
-
-def _check_issues_value_grounding(
-    submission: dict[str, object],
-    output: TriageOutput,
-) -> bool:
-    for issue in output.issues:
-        source = issue.evidence.source
-        details = issue.evidence.details
-        if not source or not details:
-            return False
-        # Missing issues don't need value grounding — there's nothing to ground against.
-        if _is_missing_issue(issue):
-            continue
-        # Non-missing issues must cite a concrete value from the submission.
-        ref, _meta = _resolve_source(submission, source)
-        if ref is not None and (
-            _details_mentions_value(details, ref) or _is_quote_from_doc(details, ref)
-        ):
-            continue
-        if _fuzzy_grounded(submission, issue, details):
-            continue
-        return False
-    return True
 
 
 def _extract_output_payload(
@@ -332,70 +160,53 @@ def _extract_output_payload(
     if isinstance(output_payload, dict):
         return output_payload, None if error is None else str(error)
 
-    if (
-        isinstance(row, dict)
-        and "decision" in row
-        and "explanation" in row
-        and "issues" in row
-    ):
+    if isinstance(row, dict) and "decision" in row and "issues" in row:
         return row, None
 
     return None, None if error is None else str(error)
 
 
+# --- Scoring -----------------------------------------------------------------
+
 
 def _local_metrics_for_row(
-    submission: dict[str, object],
-    oracle_output: TriageOutput,
+    label: CaseLabel,
     model_output_payload: dict[str, object] | None,
 ) -> dict[str, object]:
     json_schema_valid = False
-    parsed_output: TriageOutput | None = None
+    parsed_output: ScoredOutput | None = None
     parse_error: str | None = None
 
     if model_output_payload is not None:
         try:
-            parsed_output = TriageOutput.model_validate(model_output_payload)
+            parsed_output = ScoredOutput.model_validate(model_output_payload)
             json_schema_valid = True
         except Exception as exc:  # pragma: no cover - malformed output path
             parse_error = str(exc)
 
     actual_decision = parsed_output.decision if parsed_output else "INVALID"
-    decision_match_oracle = (
-        parsed_output is not None and actual_decision == oracle_output.decision
-    )
+    decision_match_oracle = parsed_output is not None and actual_decision == label.decision
 
-    expected_categories = sorted({issue.category for issue in oracle_output.issues})
+    expected_categories = sorted(set(label.categories))
     actual_categories = (
-        sorted({issue.category for issue in parsed_output.issues})
-        if parsed_output
-        else []
+        sorted({issue.category for issue in parsed_output.issues}) if parsed_output else []
     )
     issue_categories_match_oracle = expected_categories == actual_categories
 
-    issues_value_grounding = (
-        _check_issues_value_grounding(submission, parsed_output)
-        if parsed_output
-        else False
-    )
-
-    metric_bools = {
+    metrics = {
         "json_schema_valid": json_schema_valid,
         "decision_match_oracle": decision_match_oracle,
         "issue_categories_match_oracle": issue_categories_match_oracle,
-        "issues_value_grounding": issues_value_grounding,
     }
-
     aggregate_local_score = 100.0 * (
-        sum(METRIC_WEIGHTS[k] for k, v in metric_bools.items() if v)
+        sum(METRIC_WEIGHTS[k] * float(v) for k, v in metrics.items())
         / sum(METRIC_WEIGHTS.values())
     )
 
     return {
-        "oracle": oracle_output.model_dump(),
-        "parsed_output": parsed_output.model_dump() if parsed_output else None,
+        "parsed_output": model_output_payload if parsed_output else None,
         "parse_error": parse_error,
-        "metrics": metric_bools,
+        "metrics": metrics,
         "aggregate_local_score": aggregate_local_score,
         "expected_categories": expected_categories,
         "actual_categories": actual_categories,
@@ -404,40 +215,29 @@ def _local_metrics_for_row(
 
 
 def _build_eval_items(
-    cases: list[PreparedPatientCase],
+    cases: list[EvalCase],
     outputs_by_index: dict[int, dict[str, object]],
 ) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
     content_rows: list[dict[str, object]] = []
     local_rows: list[dict[str, object]] = []
 
     for idx, case in enumerate(cases):
-        submission = case.submission.model_dump()
-        oracle_output = case.expected_output
-
+        label = case.label
         baseline_row = outputs_by_index.get(idx, {})
         output_payload, output_error = _extract_output_payload(baseline_row)
 
-        local = _local_metrics_for_row(
-            submission=submission,
-            oracle_output=oracle_output,
-            model_output_payload=output_payload,
-        )
-
+        local = _local_metrics_for_row(label=label, model_output_payload=output_payload)
         metrics = local["metrics"]
 
         item = {
             "record_index": idx,
             "case_id": case.case_id,
-            "oracle_decision": oracle_output.decision,
+            "oracle_decision": label.decision,
             "expected_issue_categories": "|".join(local["expected_categories"]),
             "expected_json_schema_valid": "true",
-            "expected_issues_value_grounding": "true",
             "actual_decision": local["actual_decision"],
             "actual_issue_categories": "|".join(local["actual_categories"]),
             "json_schema_valid": "true" if metrics["json_schema_valid"] else "false",
-            "issues_value_grounding": (
-                "true" if metrics["issues_value_grounding"] else "false"
-            ),
         }
         content_rows.append({"item": item})
 
@@ -445,9 +245,9 @@ def _build_eval_items(
             {
                 "record_index": idx,
                 "case_id": case.case_id,
-                "submission": submission,
+                "submission": case.submission,
                 "baseline_error": output_error,
-                "oracle": local["oracle"],
+                "label": label.model_dump(),
                 "parsed_output": local["parsed_output"],
                 "parse_error": local["parse_error"],
                 "metrics": metrics,
@@ -473,11 +273,9 @@ def _create_eval(client: OpenAI) -> Any:
                     "oracle_decision": {"type": "string"},
                     "expected_issue_categories": {"type": "string"},
                     "expected_json_schema_valid": {"type": "string"},
-                    "expected_issues_value_grounding": {"type": "string"},
                     "actual_decision": {"type": "string"},
                     "actual_issue_categories": {"type": "string"},
                     "json_schema_valid": {"type": "string"},
-                    "issues_value_grounding": {"type": "string"},
                 },
                 "required": [
                     "record_index",
@@ -485,11 +283,9 @@ def _create_eval(client: OpenAI) -> Any:
                     "oracle_decision",
                     "expected_issue_categories",
                     "expected_json_schema_valid",
-                    "expected_issues_value_grounding",
                     "actual_decision",
                     "actual_issue_categories",
                     "json_schema_valid",
-                    "issues_value_grounding",
                 ],
             },
         },
@@ -506,13 +302,6 @@ def _create_eval(client: OpenAI) -> Any:
                 "name": "json_schema_valid",
                 "input": "{{item.json_schema_valid}}",
                 "reference": "{{item.expected_json_schema_valid}}",
-                "operation": "eq",
-            },
-            {
-                "type": "string_check",
-                "name": "issues_value_grounding",
-                "input": "{{item.issues_value_grounding}}",
-                "reference": "{{item.expected_issues_value_grounding}}",
                 "operation": "eq",
             },
             {
@@ -602,12 +391,7 @@ def _summarize_local_rows(local_rows: list[dict[str, object]]) -> dict[str, obje
             "aggregate_local_score_pct": 0.0,
         }
 
-    metric_names = [
-        "json_schema_valid",
-        "decision_match_oracle",
-        "issue_categories_match_oracle",
-        "issues_value_grounding",
-    ]
+    metric_names = list(METRIC_WEIGHTS)
 
     summary: dict[str, object] = {"records": len(local_rows)}
 
@@ -693,7 +477,7 @@ def run_determinism_mode(args: argparse.Namespace) -> dict[str, object]:
         )
 
     case = cases[args.record_index]
-    submission = case.submission.model_dump()
+    submission = case.submission
 
     run_rows: list[dict[str, object]] = []
     decisions: list[str] = []

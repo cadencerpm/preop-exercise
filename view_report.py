@@ -16,6 +16,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from rich.markup import escape
 from rich.syntax import Syntax
 from textual import on
 from textual.app import App, ComposeResult
@@ -33,14 +34,12 @@ METRIC_NAMES = [
     "json_schema_valid",
     "decision_match_oracle",
     "issue_categories_match_oracle",
-    "issues_value_grounding",
 ]
 
 METRIC_WEIGHTS: dict[str, float] = {
     "json_schema_valid": 1.0,
     "decision_match_oracle": 1.0,
     "issue_categories_match_oracle": 1.0,
-    "issues_value_grounding": 0.5,
 }
 
 # ---------------------------------------------------------------------------
@@ -58,7 +57,6 @@ _SHORT_METRIC_NAMES: dict[str, str] = {
     "json_schema_valid": "schema",
     "decision_match_oracle": "decision",
     "issue_categories_match_oracle": "categories",
-    "issues_value_grounding": "grounding",
 }
 
 
@@ -73,23 +71,21 @@ def _fmt_pct(n: int, total: int) -> str:
 
 
 def _fmt_issues(issues: list[dict] | None) -> str:
+    """Render issues without assuming an evidence format (it is implementation-defined)."""
+
     if not issues:
         return "(none)"
     lines: list[str] = []
     for i, iss in enumerate(issues, 1):
         cat = iss.get("category", "?")
         desc = iss.get("description", "")
-        src = ""
-        ev = iss.get("evidence", {})
-        if ev:
-            src = ev.get("source", "")
         line = f"  {i}. [{cat}] {desc}"
-        if src:
-            line += f"\n     source: {src}"
-        details = ev.get("details", "") if ev else ""
-        if details:
-            line += f"\n     details: {details}"
-        lines.append(line)
+        evidence = iss.get("evidence")
+        if evidence:
+            if not isinstance(evidence, str):
+                evidence = json.dumps(evidence, ensure_ascii=False)
+            line += f"\n     evidence: {evidence}"
+        lines.append(escape(line))
     return "\n".join(lines)
 
 
@@ -290,7 +286,7 @@ class EvalReportApp(App):
         case_id = rec.get("case_id", "?")
         score = rec.get("aggregate_local_score", 0)
 
-        oracle = rec.get("oracle", {}) or {}
+        label = rec.get("label", {}) or {}
         actual = rec.get("parsed_output", {}) or {}
         parse_err = rec.get("parse_error")
         baseline_err = rec.get("baseline_error")
@@ -314,25 +310,24 @@ class EvalReportApp(App):
 
         # Side-by-side: decision
         lines.append("\n[bold]Decision:[/bold]")
-        o_dec = oracle.get("decision", "?")
+        l_dec = label.get("decision", "?")
         a_dec = actual.get("decision", "?")
-        match = "✓" if o_dec == a_dec else "✗"
-        lines.append(f"  Oracle:  {o_dec}")
+        match = "✓" if l_dec == a_dec else "✗"
+        lines.append(f"  Label:   {l_dec}")
         lines.append(f"  Actual:  {a_dec}  {match}")
 
-        # Issues comparison
-        lines.append("\n[bold]Oracle issues:[/bold]")
-        lines.append(_fmt_issues(oracle.get("issues")))
+        # Categories comparison
+        lines.append("\n[bold]Label categories:[/bold]")
+        lines.append("  " + (", ".join(label.get("categories") or []) or "(none)"))
+
+        lines.append("\n[bold]Why (labeler's rationale):[/bold]")
+        lines.append(f"  {escape(label.get('rationale') or '—')}")
 
         lines.append("\n[bold]Actual issues:[/bold]")
         lines.append(_fmt_issues(actual.get("issues")))
 
-        # Explanations
-        lines.append("\n[bold]Oracle explanation:[/bold]")
-        lines.append(f"  {oracle.get('explanation', '—')}")
-
         lines.append("\n[bold]Actual explanation:[/bold]")
-        lines.append(f"  {actual.get('explanation', '—')}")
+        lines.append(f"  {escape(str(actual.get('explanation', '—')))}")
 
         return "\n".join(lines)
 

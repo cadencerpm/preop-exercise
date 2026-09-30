@@ -7,7 +7,7 @@ Implement `triage_submission(...)` in `core.py` - it is a pre-op triage function
 Your output must match this schema:
 
 - `decision`: `READY | NEEDS_FOLLOW_UP | NOT_CLEARED`
-- `issues[]`: category + evidence (`source`, `details`)
+- `issues[]`: `category` + evidence (how you design this is up to you)
 - `explanation`
 
 ## What Is Provided
@@ -15,9 +15,9 @@ Your output must match this schema:
 - `data/patients_sample_50.jsonl` includes:
   - `case_id`
   - `submission`
-  - `expected_output`
+  - `label` (what a human labeled this case as)
 - `run_baseline.py` runs your `triage_submission` implementation and writes outputs.
-- `run_evals.py` scores outputs against provided `expected_output` and can run determinism checks.
+- `run_evals.py` scores outputs against provided `label` and can run determinism checks.
 
 ## Completion
 
