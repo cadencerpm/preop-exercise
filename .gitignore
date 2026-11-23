@@ -31,3 +31,7 @@ dist/
 data/baseline_outputs.jsonl
 data/eval_report.json
 data/determinism_report.json
+data/offline_outputs.jsonl
+
+# Extraction cache (content-addressed LLM responses)
+.cache/

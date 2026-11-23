@@ -1,0 +1,38 @@
+# Cadence Surgical Center Pre-Operative Scheduling Policy, encoded as data.
+#
+# Every threshold the rules engine uses lives here. A policy revision should be a
+# reviewed diff to this file (plus a version bump), not a code change.
+# The rules engine stamps `version` into every triage output for auditability.
+
+[policy]
+name = "Cadence Surgical Center Pre-Operative Scheduling Policy"
+version = "2026-01-01"
+effective_date = "2026-01-01"
+
+# Rule 1: Required documentation
+[documentation]
+history_and_physical_max_age_days = 30   # H&P completed within N days of procedure date (inclusive)
+require_signed_consent = true
+
+# Rule 2: Required pre-operative testing, by procedure risk.
+# Map of test -> max age in days relative to procedure date (inclusive).
+[testing.LOW]
+CBC = 30
+
+[testing.MODERATE]
+CBC = 30
+
+[testing.HIGH]
+CBC = 14
+CMP = 14
+
+# Rule 3: Anticoagulation management
+[anticoagulation]
+require_pre_procedure_instruction = true
+require_post_procedure_instruction = true
+
+# Rule 4: Acute safety exclusions (most recent reading of each vital)
+[acute_safety]
+systolic_bp_exclusion_at_or_above = 180   # mmHg, >= excludes
+diastolic_bp_exclusion_at_or_above = 110  # mmHg, >= excludes
+temperature_f_exclusion_above = 100.4     # degrees F, > excludes

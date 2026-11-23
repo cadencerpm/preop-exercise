@@ -1,5 +1,10 @@
 # Pre-Op Triage Take-Home
 
+> **Solution overview:** see [APPROACH.md](APPROACH.md). The LLM reads each document
+> (strict structured output, verified quotes); a deterministic rules engine applies
+> the policy in [`preop/policy.toml`](preop/policy.toml). `make test` and
+> `make offline` run without an API key; `make baseline` uses the LLM reader.
+
 ## Objective
 
 Implement `triage_submission(...)` in `core.py` - it is a pre-op triage function for a single submission package. It is currently a naive LLM-based solution that makes a real model API call. The starter implementation intentionally does not follow some best practices in using the OpenAI API. You may use whatever file structure makes sense for your solution.

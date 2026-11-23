@@ -1,142 +1,133 @@
+"""Entry point, LLM reader contract, caching and determinism."""
+
 from __future__ import annotations
 
 import json
-import sys
 from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
-from pydantic import ValidationError
+from conftest import load_sample_cases
 
-from core import (
-    BASELINE_SYSTEM_PROMPT,
-    PatientSubmission,
-    TriageOutput,
-    triage_output_json_schema,
-    triage_submission,
-)
+from core import PatientSubmission, TriageOutput, triage_submission
+from preop.extract.base import ProcedureContext
+from preop.extract.heuristic import HeuristicExtractor
+from preop.extract.llm import PROMPT_VERSION, LLMExtractor
+from preop.facts import DocumentFacts, empty_facts
+from run_evals import ScoredOutput
+
+DOC = {"doc_id": "d1", "type": "H&P", "date": "2026-02-21", "author": "A", "text": "HISTORY AND PHYSICAL\nok"}
+CTX = ProcedureContext("Elective hernia repair", "2026-03-01")
+
+
+def _facts() -> DocumentFacts:
+    f = empty_facts()
+    f.history_and_physical.is_history_and_physical = True
+    f.history_and_physical.quote = "HISTORY AND PHYSICAL"
+    return f
 
 
 @pytest.fixture
-def openai_client(monkeypatch: pytest.MonkeyPatch) -> Mock:
+def fake_client() -> Mock:
     client = Mock()
-    client.responses.create.return_value = SimpleNamespace(
-        output_text=json.dumps(
-            {
-                "decision": "READY",
-                "issues": [],
-                "explanation": "All required criteria are satisfied.",
-            }
-        ),
-    )
-
-    monkeypatch.setitem(sys.modules, "openai", SimpleNamespace(OpenAI=lambda: client))
+    client.responses.parse.return_value = SimpleNamespace(output_parsed=_facts())
     return client
 
 
-@pytest.fixture
-def submission_payload() -> dict[str, object]:
-    return {
-        "patient": {"id": "patient-1"},
-        "procedure": {
-            "case_id": "case-1",
-            "procedure_risk": "LOW",
-            "procedure_date": "2026-02-01",
-        },
-        "vitals": [
-            {
-                "type": "blood_pressure",
-                "systolic": 120,
-                "diastolic": 80,
-                "date": "2026-01-25",
-            }
-        ],
-        "labs": [
-            {
-                "code": "CBC",
-                "display": "Complete blood count",
-                "effective_at": "2026-01-20",
-                "status": "final",
-            }
-        ],
-        "medications": [],
-        "conditions": [],
-        "documents": [
-            {
-                "type": "history_and_physical",
-                "date": "2026-01-20",
-                "text": "History and physical completed.",
-            },
-            {
-                "type": "surgical_consent",
-                "date": "2026-01-22",
-                "text": "Signed surgical consent.",
-            },
-        ],
+def test_llm_reader_uses_strict_structured_output_at_temperature_zero(fake_client, tmp_path):
+    reader = LLMExtractor("gpt-4.1-mini", client=fake_client, cache_dir=tmp_path)
+    facts = reader.extract(DOC, CTX)
+    assert facts.history_and_physical.is_history_and_physical
+    kwargs = fake_client.responses.parse.call_args.kwargs
+    assert kwargs["text_format"] is DocumentFacts
+    assert kwargs["temperature"] == 0
+    assert kwargs["model"] == "gpt-4.1-mini"
+    user = kwargs["input"][0]["content"]
+    assert "Elective hernia repair" in user and DOC["text"] in user
+    # the reader never sees policy thresholds; it only reports observations
+    assert "30 days" not in kwargs["instructions"] and "180" not in kwargs["instructions"]
+
+
+def test_llm_reader_caches_by_content(fake_client, tmp_path):
+    reader = LLMExtractor("gpt-4.1-mini", client=fake_client, cache_dir=tmp_path)
+    reader.extract(DOC, CTX)
+    reader.extract(DOC, CTX)
+    assert fake_client.responses.parse.call_count == 1  # replayed from cache
+    reader.extract({**DOC, "text": DOC["text"] + " edited"}, CTX)
+    assert fake_client.responses.parse.call_count == 2  # new content -> new call
+    LLMExtractor("gpt-4.1", client=fake_client, cache_dir=tmp_path).extract(DOC, CTX)
+    assert fake_client.responses.parse.call_count == 3  # model is part of the key
+    assert PROMPT_VERSION
+
+
+def test_llm_reader_raises_on_refusal(fake_client, tmp_path):
+    fake_client.responses.parse.return_value = SimpleNamespace(output_parsed=None)
+    with pytest.raises(RuntimeError):
+        LLMExtractor("m", client=fake_client, cache_dir=tmp_path).extract(DOC, CTX)
+
+
+def test_output_satisfies_scorer_schema_and_is_json_serializable():
+    case = load_sample_cases()[0]
+    out = triage_submission(case["submission"], model="unused", extractor=HeuristicExtractor())
+    assert isinstance(out, TriageOutput)
+    payload = json.loads(json.dumps(out.model_dump()))
+    ScoredOutput.model_validate(payload)
+    assert payload["provenance"]["policy_version"] == "2026-01-01"
+
+
+def test_accepts_validated_submission_model():
+    case = load_sample_cases()[3]
+    sub = PatientSubmission.model_validate(case["submission"])
+    out = triage_submission(sub, model="unused", extractor=HeuristicExtractor())
+    assert out.decision == case["label"]["decision"]
+
+
+def test_byte_identical_output_across_runs():
+    case = load_sample_cases()[16]
+    runs = {
+        json.dumps(triage_submission(case["submission"], model="m", extractor=HeuristicExtractor()).model_dump(),
+                   sort_keys=True)
+        for _ in range(5)
     }
+    assert len(runs) == 1
 
 
-def test_triage_submission_returns_structured_output(
-    openai_client: Mock,
-    submission_payload: dict[str, object],
-) -> None:
-    output = triage_submission(submission_payload, model="test-model")
-
-    assert isinstance(output, TriageOutput)
-    assert output.decision == "READY"
-    assert output.issues == []
-    assert output.explanation == "All required criteria are satisfied."
-
-    assert openai_client.responses.create.call_count == 1
-    call = openai_client.responses.create.call_args.kwargs
-    assert call["model"] == "test-model"
-    assert call["instructions"] == BASELINE_SYSTEM_PROMPT
-
-    text_config = call["text"]
-    assert isinstance(text_config, dict)
-    response_format = text_config["format"]
-    assert isinstance(response_format, dict)
-    assert response_format["type"] == "json_schema"
-    assert response_format["name"] == "preop_triage_output"
-    assert response_format["schema"] == triage_output_json_schema()
-    assert response_format["strict"] is False
-
-
-def test_triage_submission_builds_prompt_from_validated_submission(
-    openai_client: Mock,
-    submission_payload: dict[str, object],
-) -> None:
-    submission = PatientSubmission.model_validate(submission_payload)
-
-    triage_submission(submission, model="test-model")
-
-    assert openai_client.responses.create.call_count == 1
-    call = openai_client.responses.create.call_args.kwargs
-    message = call["input"][0]
-    content = message["content"][0]
-    prompt = content["text"]
-
-    assert message["type"] == "message"
-    assert message["role"] == "user"
-    assert content["type"] == "input_text"
-    assert json.loads(prompt.split("Submission JSON:\n", 1)[1]) == submission.model_dump()
-
-
-def test_triage_submission_rejects_invalid_model_json(
-    openai_client: Mock,
-    submission_payload: dict[str, object],
-) -> None:
-    openai_client.responses.create.return_value = SimpleNamespace(
-        output_text=json.dumps(
-            {
-                "decision": "MAYBE",
-                "issues": [],
-                "explanation": "Not a valid triage decision.",
-            }
-        )
+def test_crosscheck_flags_reader_disagreement(monkeypatch, tmp_path):
+    """LLM reader misses a consent the heuristic reader sees -> review flag, decision unchanged."""
+    case = load_sample_cases()[0]
+    client = Mock()
+    client.responses.parse.side_effect = lambda **kw: SimpleNamespace(
+        output_parsed=HeuristicExtractor().extract(_doc_from_prompt(case, kw["input"][0]["content"]), CTX)
+        if "CONSENT" not in kw["input"][0]["content"] else empty_facts()
     )
+    monkeypatch.setenv("PREOP_EXTRACTOR", "crosscheck")
+    monkeypatch.setenv("PREOP_CACHE_DIR", str(tmp_path))
+    import core
 
-    with pytest.raises(ValidationError):
-        triage_submission(submission_payload, model="test-model")
+    monkeypatch.setattr(core, "_make_extractor", lambda model, kind: LLMExtractor(model, client=client, cache_dir=tmp_path))
+    out = triage_submission(case["submission"], model="m")
+    assert out.decision == "NEEDS_FOLLOW_UP"  # primary reader drives the decision
+    assert any(f.code == "READERS_DISAGREE" and f.ref == "signed_surgical_consent" for f in out.review_flags)
 
-    assert openai_client.responses.create.call_count == 1
+
+def _doc_from_prompt(case, prompt: str) -> dict:
+    return next(d for d in case["submission"]["documents"] if d["text"] in prompt)
+
+
+def test_reader_outage_degrades_to_offline_reader_with_flag(tmp_path):
+    client = Mock()
+    client.responses.parse.side_effect = TimeoutError("upstream timeout")
+    case = load_sample_cases()[1]
+    out = triage_submission(case["submission"], model="m",
+                            extractor=LLMExtractor("m", client=client, cache_dir=tmp_path))
+    assert out.decision == case["label"]["decision"]
+    assert any(f.code == "PRIMARY_READER_FAILED" for f in out.review_flags)
+
+
+def test_missing_api_key_fails_loudly_instead_of_silently_degrading(monkeypatch, tmp_path):
+    from preop.extract.base import ReaderConfigError
+
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    case = load_sample_cases()[1]
+    with pytest.raises(ReaderConfigError):
+        triage_submission(case["submission"], model="m", extractor=LLMExtractor("m", cache_dir=tmp_path))

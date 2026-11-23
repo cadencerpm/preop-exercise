@@ -4,7 +4,7 @@ REPORT ?= data/eval_report.json
 DETERMINISM_REPORT ?= data/determinism_report.json
 MODEL ?= gpt-4.1-mini
 
-.PHONY: baseline evals determinism score report test all clean
+.PHONY: baseline evals determinism score report test offline all clean
 
 baseline:
 	uv run run_baseline.py \
@@ -38,9 +38,16 @@ test:
 		--with 'pytest>=8.0.0' \
 		python -m pytest tests
 
+# Score locally with per-category error analysis, no OpenAI Evals run needed.
+# EXTRACTOR=heuristic runs fully offline; EXTRACTOR=crosscheck|llm uses the API.
+EXTRACTOR ?= heuristic
+offline:
+	PREOP_EXTRACTOR=$(EXTRACTOR) uv run tools/offline_eval.py --input $(INPUT) --model $(MODEL)
+
 all: baseline evals determinism score
 
 clean:
 	rm -f data/baseline_outputs.jsonl \
 		data/eval_report.json \
-		data/determinism_report.json
+		data/determinism_report.json \
+		data/offline_outputs.jsonl

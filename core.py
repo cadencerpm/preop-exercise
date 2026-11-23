@@ -1,66 +1,35 @@
-"""Shared policy, schema, and prompt helpers for the pre-op triage scripts."""
+"""Public entry point for pre-op triage, plus the submission input schema.
+
+`triage_submission` delegates to the `preop` package:
+LLM reads each document -> facts are verified against source text ->
+a deterministic rules engine applies the policy in `preop/policy.toml`.
+"""
 
 from __future__ import annotations
 
-import json
-from typing import Literal
+import os
+from typing import Any, Literal
 
-from pydantic import AliasChoices, BaseModel, Field
+from pydantic import BaseModel as _PydanticBaseModel
+from pydantic import ConfigDict, Field
 
-# -------------------------
-# Policy + system prompt
-# -------------------------
+from preop.output import (  # re-exported: run_evals.py imports these from core
+    CheckResult,
+    Decision,
+    Evidence,
+    IssueCategory,
+    TriageIssue,
+    TriageOutput,
+)
 
-BASELINE_SYSTEM_PROMPT = """
-You are a clinical operations assistant for pre-op scheduling triage.
-Base decisions only on the policy below. General clinical knowledge may be used to interpret the record (e.g., drug brand names, unit conversions), not to add criteria.
 
-Cadence Surgical Center Pre-Operative Scheduling Policy (effective Jan 1, 2026)
+class BaseModel(_PydanticBaseModel):
+    # Keep unknown fields: real payloads carry fields this schema doesn't list
+    # (e.g. value_c on a vital), and dropping them silently would hide evidence.
+    model_config = ConfigDict(extra="allow")
 
-Output exactly one status:
-- READY
-- NEEDS_FOLLOW_UP
-- NOT_CLEARED
 
-Rule 1: Required documentation
-- History and Physical (H&P) must exist and be completed within 30 days of procedure date.
-- Signed Surgical Consent must exist.
-If documentation is missing/outdated -> NEEDS_FOLLOW_UP.
-
-Rule 2: Required testing by procedure risk
-- LOW or MODERATE risk: CBC within 30 days of procedure date.
-- HIGH risk: CBC within 14 days and CMP within 14 days.
-Use only the most recent result for each required test.
-If a required test is missing or outside window -> NEEDS_FOLLOW_UP.
-
-Rule 3: Anticoagulation management
-If the patient is currently taking an anticoagulant, a perioperative anticoagulation plan must be documented and clear.
-If no clear plan is documented -> NEEDS_FOLLOW_UP.
-
-Rule 4: Acute safety exclusions
-If any of the following are present at review time -> NOT_CLEARED:
-- Systolic BP >= 180 mmHg
-- Diastolic BP >= 110 mmHg
-- Temperature > 100.4 F
-Use the most recent relevant vital.
-
-Final determination
-- READY only if all required criteria are satisfied and no exclusions are present.
-- If a required field needed to evaluate a rule is missing/unknown -> NEEDS_FOLLOW_UP.
-
-Output requirements
-- Return exactly one JSON object.
-""".strip()
-
-Decision = Literal["READY", "NEEDS_FOLLOW_UP", "NOT_CLEARED"]
 ProcedureRisk = Literal["LOW", "MODERATE", "HIGH"]
-IssueCategory = Literal[
-    "REQUIRED_DOCUMENTATION",
-    "REQUIRED_TESTING",
-    "ANTICOAGULATION_MANAGEMENT",
-    "ACUTE_SAFETY_EXCLUSION",
-    "MISSING_REQUIRED_DATA",
-]
 
 # -------------------------
 # Schemas
@@ -155,83 +124,48 @@ class PatientSubmission(BaseModel):
     documents: list[Document] = Field(default_factory=list)
     metadata: SubmissionMetadata | None = None
 
-class TriageIssue(BaseModel):
-
-    category: IssueCategory
-    evidence: str
-
-class TriageOutput(BaseModel):
-    """Structured output contract for triage responses."""
-
-    decision: Decision
-    issues: list[TriageIssue] = Field(validation_alias=AliasChoices("issues"))
-    explanation: str
-
-
-def triage_output_json_schema() -> dict[str, object]:
-    """Return the JSON schema used for structured model outputs."""
-
-    schema = TriageOutput.model_json_schema()
-    return schema
 
 
 # -------------------------
-# Prompt helpers
+# Entry point
 # -------------------------
 
 
-def build_user_prompt(submission: dict[str, object]) -> str:
-    """Format a single submission package as user input."""
+def _make_extractor(model: str, kind: str):
+    from preop.extract.heuristic import HeuristicExtractor
+    from preop.extract.llm import LLMExtractor
 
-    sections = [
-        "Evaluate this patient package for pre-op scheduling readiness using the provided policy.",
-        "Return your response as JSON.",
-        "Submission JSON:",
-        json.dumps(submission, sort_keys=True),
-    ]
-    return "\n".join(sections)
+    if kind == "heuristic":
+        return HeuristicExtractor()
+    if kind in {"llm", "crosscheck"}:
+        return LLMExtractor(model)
+    raise ValueError(f"Unknown PREOP_EXTRACTOR={kind!r} (expected llm | heuristic | crosscheck)")
 
 
 def triage_submission(
     submission: dict[str, object] | PatientSubmission,
     *,
     model: str,
+    extractor: Any | None = None,
 ) -> TriageOutput:
-    """Naive baseline implementation: single LLM call with JSON response output."""
+    """Triage one submission package.
 
-    # Import lazily so core utilities remain usable without OpenAI installed.
-    from openai import OpenAI
+    Extractor selection (env PREOP_EXTRACTOR):
+      crosscheck (default) LLM reader decides; the free offline heuristic reader
+                 runs as an independent second opinion, and any check where the
+                 two disagree becomes a review flag for the nurse
+      llm        LLM reader only
+      heuristic  offline regex reader only, no API key needed
+    """
+    from preop.extract.heuristic import HeuristicExtractor
+    from preop.pipeline import triage
 
     if isinstance(submission, PatientSubmission):
-        submission_payload = submission.model_dump()
+        payload = submission.model_dump()
     else:
-        submission_payload = PatientSubmission.model_validate(submission).model_dump()
+        payload = PatientSubmission.model_validate(submission).model_dump()
 
-    client = OpenAI()
-    request_kwargs: dict[str, object] = {
-        "model": model,
-        "instructions": BASELINE_SYSTEM_PROMPT,
-        "input": [
-            {
-                "type": "message",
-                "role": "user",
-                "content": [
-                    {
-                        "type": "input_text",
-                        "text": build_user_prompt(submission_payload),
-                    }
-                ],
-            }
-        ],
-        "text": {
-            "format": {
-                "type": "json_schema",
-                "name": "preop_triage_output",
-                "schema": triage_output_json_schema(),
-                "strict": False,
-            }
-        },
-    }
-
-    response = client.responses.create(**request_kwargs)
-    return TriageOutput.model_validate_json(response.output_text)
+    kind = os.environ.get("PREOP_EXTRACTOR", "crosscheck")
+    reader = extractor or _make_extractor(model, kind)
+    second = HeuristicExtractor() if kind == "crosscheck" and extractor is None else None
+    return triage(payload, reader, second_reader=second)
